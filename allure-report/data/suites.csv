@@ -1,0 +1,2 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Mon Jun 27 21:33:53 CEST 2022","Mon Jun 27 21:34:03 CEST 2022","9597","","My Login application","","My Login application","should login with valid credentials","should login with valid credentials",""
