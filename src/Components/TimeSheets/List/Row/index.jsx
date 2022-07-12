@@ -1,22 +1,12 @@
 import React from 'react';
 
 function Row(props) {
-  const {
-    _id: id,
-    employeeId,
-    description,
-    project,
-    date,
-    task,
-    hours,
-    approved,
-    role
-  } = props.timeSheet;
+  const { _id: id, employeeId, project, date, task, hours, approved, role } = props.timeSheet;
+  console.log(props.employeeId);
   return (
     <tr id={id} className={StyleSheet.row}>
       <td>{id}</td>
       <td>{employeeId ? employeeId._id : 'No id'}</td>
-      <td>{description}</td>
       <td>{project}</td>
       <td>{date}</td>
       <td>{task.taskName}</td>

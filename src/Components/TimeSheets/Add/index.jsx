@@ -6,22 +6,22 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
+import { useEffect } from 'react';
 
 function AddTimeSheets(props) {
   const [tasks, setTasks] = useState('');
-  const { showCreateModal, handleClose, allTasks } = props;
-  const [selectedTasks, setSelectedTasks] = useState([]);
+  const { showCreateModal, handleClose } = props;
   const dispatch = useDispatch();
   const schema = Joi.object({
-    employeeId: Joi.string().required().messages({ 'string.empty': 'This field must be complete' }),
-    description: Joi.string().min(3).max(80).messages({
+    employeeId: Joi.string().alphanum().length(24).required().messages({
       'string.empty': 'This field must be complete',
-      'string.min': 'This field must have at least 3 characters',
-      'string.max': 'This field can not contain more than 80 characters'
+      'string.length': 'Employee ID must be 24 characters long',
+      'string.alphanum': 'Employee ID must only contain alpha-numeric characters'
     }),
-    project: Joi.string().min(3).required().messages({
+    projectId: Joi.string().alphanum().length(24).required().messages({
       'string.empty': 'This field must be complete',
-      'string.min': 'This field must have at least 3 characters'
+      'string.length': 'Employee ID must be 24 characters long',
+      'string.alphanum': 'Employee ID must only contain alpha-numeric characters'
     }),
     date: Joi.date().less('now').required().messages({
       'date.base': 'This field must be complete',
@@ -32,28 +32,23 @@ function AddTimeSheets(props) {
       'number.min': 'This field must have at least 1 hour',
       'number.max': 'This field can not have more than 24 hours'
     }),
-    approved: Joi.bool().required(),
-    role: Joi.string().valid('DEV', 'QA', 'PM', 'TL').required().messages({
-      'any.only': 'This field must contain one of the following roles: DEV, QA, PM or TL'
-    })
+    approved: Joi.bool().optional(),
+    taskId: Joi.string()
   });
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm({
     mode: 'onBlur',
     resolver: joiResolver(schema)
   });
-  const appendToSelectedTasks = (id) => {
-    const previousState = selectedTasks;
-    setSelectedTasks([...previousState, id]);
-    setTasks('');
-  };
-
-  const deleteFromSelectedTasks = (id) => {
-    setSelectedTasks(selectedTasks.filter((task) => task !== id));
-  };
+  useEffect(() => {
+    reset({
+      employeeId: props.currentUser._id
+    });
+  }, []);
 
   const addTimeSheets = async (timeSheet) => {
     dispatch(thunks.addTimesheets(timeSheet));
@@ -62,8 +57,11 @@ function AddTimeSheets(props) {
     e.preventDefault();
     addTimeSheets({
       ...data,
-      task: selectedTasks
+      employeeId: props.currentUser._id,
+      approved: false
     });
+    console.log(data);
+    console.log('tasls ', tasks);
   };
   return (
     <section>
@@ -74,37 +72,26 @@ function AddTimeSheets(props) {
         title="Add Time Sheet"
       >
         <div className={styles.container}>
+          {props.role === 'PM' && (
+            <div>
+              <label htmlFor="employeeId">Employee ID</label>
+              <input
+                {...register('employeeId', { required: true })}
+                type="text"
+                placeholder="Employee ID"
+              />
+              {errors.employeeId?.type === 'string.empty' && (
+                <p className={styles.error}>{errors.employeeId.message}</p>
+              )}
+            </div>
+          )}
           <div>
-            <label htmlFor="employeeId"> Employee ID </label>
+            <label htmlFor="projectId">Project ID</label>
             <input
-              {...register('employeeId', { required: true })}
+              {...register('projectId', { required: true })}
               type="text"
-              placeholder="Employee ID"
+              placeholder="Project ID"
             />
-            {errors.employeeId?.type === 'string.empty' && (
-              <p className={styles.error}>{errors.employeeId.message}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="description"> Description </label>
-            <input
-              {...register('description', { required: true })}
-              type="text"
-              placeholder="Description"
-            />
-            {errors.description?.type === 'string.empty' && (
-              <p className={styles.error}>{errors.description.message}</p>
-            )}
-            {errors.description?.type === 'string.min' && (
-              <p className={styles.error}>{errors.description.message}</p>
-            )}
-            {errors.description?.type === 'string.max' && (
-              <p className={styles.error}>{errors.description.message}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="project"> Project </label>
-            <input {...register('project', { required: true })} type="text" placeholder="Project" />
             {errors.project?.type === 'string.empty' && (
               <p className={styles.error}>{errors.project.message}</p>
             )}
@@ -113,7 +100,7 @@ function AddTimeSheets(props) {
             )}
           </div>
           <div>
-            <label htmlFor="date"> Date </label>
+            <label htmlFor="date">Date</label>
             <input {...register('date', { required: true })} type="date" placeholder="YYYY-MM-DD" />
             {errors.date?.type === 'date.base' && (
               <p className={styles.error}>{errors.date.message}</p>
@@ -123,7 +110,7 @@ function AddTimeSheets(props) {
             )}
           </div>
           <div>
-            <label htmlFor="hours"> Hours </label>
+            <label htmlFor="hours">Hours</label>
             <input {...register('hours', { required: true })} type="number" placeholder="Hours" />
             {errors.hours?.type === 'number.base' && (
               <p className={styles.error}>{errors.hours.message}</p>
@@ -136,65 +123,21 @@ function AddTimeSheets(props) {
             )}
           </div>
           <div>
-            <label htmlFor="task"> Task </label>
+            <label htmlFor="taskId">Task</label>
             <input
+              {...register('taskId', { required: true })}
               type="text"
-              placeholder="Task"
-              value={tasks}
+              placeholder="Task ID"
+              value={tasks.name}
               onChange={(e) => setTasks(e.target.value)}
             />
+          </div>
+          {props.role === 'PM' && (
             <div>
-              {tasks.length > 0
-                ? allTasks
-                    .filter(
-                      (task) =>
-                        task.taskName.match(new RegExp(tasks, 'i')) ||
-                        task.taskDescription.match(new RegExp(tasks, 'i'))
-                    )
-                    .map((task) => {
-                      return (
-                        <p
-                          key={task._id}
-                          onClick={() =>
-                            selectedTasks.find((item) => item === task._id)
-                              ? deleteFromSelectedTasks(task._id)
-                              : appendToSelectedTasks(task._id)
-                          }
-                          className={
-                            selectedTasks.find((item) => item === task._id)
-                              ? styles.selectedItem
-                              : styles.notSelectedItem
-                          }
-                        >
-                          {task.taskName}: {task.taskDescription}
-                        </p>
-                      );
-                    })
-                : selectedTasks.map((task) => {
-                    return (
-                      <p
-                        key={task}
-                        className={styles.chip}
-                        onClick={() => deleteFromSelectedTasks(task)}
-                      >
-                        {allTasks.find((item) => item._id === task).taskName}:{' '}
-                        {allTasks.find((item) => item._id === task).taskDescription}
-                      </p>
-                    );
-                  })}
+              <label htmlFor="approved">Approved</label>
+              <input {...register('approved', { required: true })} type="checkbox" />
             </div>
-          </div>
-          <div>
-            <label htmlFor="approved"> Approved </label>
-            <input {...register('approved', { required: true })} type="checkbox" />
-          </div>
-          <div>
-            <label htmlFor="role"> Role </label>
-            <input {...register('role', { required: true })} type="text" placeholder="Role" />
-            {errors.role?.type === 'any.only' && (
-              <p className={styles.error}>{errors.role.message}</p>
-            )}
-          </div>
+          )}
         </div>
       </Form>
     </section>

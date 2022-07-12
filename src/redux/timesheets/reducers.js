@@ -81,6 +81,7 @@ export const timesheetReducer = (state = initialState, action) => {
         isFetching: false,
         error: action.payload
       };
+    // MODALS
     case types.SHOW_CREATE_MODAL:
       return {
         ...state,
@@ -96,6 +97,24 @@ export const timesheetReducer = (state = initialState, action) => {
         ...state,
         showCreateModal: false,
         showEditModal: false
+      };
+    // EMPLOYEE TIMESHEET
+    case types.GET_EMPLOYEE_TIMSHEET_PENDING:
+      return {
+        ...state,
+        isFetching: true
+      };
+    case types.GET_EMPLOYEE_TIMSHEET_FULFILLED:
+      return {
+        ...state,
+        list: action.payload,
+        isFetching: false
+      };
+    case types.GET_EMPLOYEE_TIMSHEET_FAILED:
+      return {
+        ...state,
+        isFetching: false,
+        error: action.payload
       };
     default:
       return state;

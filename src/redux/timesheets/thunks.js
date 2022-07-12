@@ -2,7 +2,8 @@ import {
   getTimesheetApi,
   deleteTimesheetApi,
   addTimesheetApi,
-  editTimesheetApi
+  editTimesheetApi,
+  getEmployeeTimesheetApi
 } from '../../Components/TimeSheets/api';
 import * as actions from './actions';
 
@@ -60,6 +61,19 @@ export const editTimesheet = (newBody, id) => {
       })
       .catch((error) => {
         dispatch(actions.updateTimeSheetFailed(error));
+      });
+  };
+};
+
+export const getEmployeeTimesheets = (id) => {
+  return (dispatch) => {
+    dispatch(actions.getEmployeTimesheetPending());
+    getEmployeeTimesheetApi(id)
+      .then((response) => {
+        dispatch(actions.getEmployeeTimesheetFulfilled(response.data));
+      })
+      .catch((error) => {
+        dispatch(actions.getEmployeTimesheetFailed(error));
       });
   };
 };

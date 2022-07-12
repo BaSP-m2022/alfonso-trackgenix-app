@@ -15,7 +15,7 @@ const CreateProject = (props) => {
     clientName: '',
     startDate: '',
     endDate: '',
-    projectManager: '',
+    // projectManager: '',
     team: [],
     tasks: []
   };
@@ -77,18 +77,18 @@ const CreateProject = (props) => {
         'any.ref': 'Start date is required'
       })
       .optional(),
-    projectManager: Joi.string()
-      .min(3)
-      .max(30)
-      .regex(/^([ \u00c0-\u01ffa-zA-Z'-])+$/)
-      .messages({
-        'string.min': 'Project manager name must contain 3 or more letters',
-        'string.max': 'Project manager name must contain 30 or less letters',
-        'string.empty': 'This field is required',
-        'string.pattern.base': 'Name is not valid',
-        'string.regex': 'Project manager name is not valid'
-      })
-      .required(),
+    // projectManager: Joi.string()
+    //   .min(3)
+    //   .max(30)
+    //   .regex(/^([ \u00c0-\u01ffa-zA-Z'-])+$/)
+    //   .messages({
+    //     'string.min': 'Project manager name must contain 3 or more letters',
+    //     'string.max': 'Project manager name must contain 30 or less letters',
+    //     'string.empty': 'This field is required',
+    //     'string.pattern.base': 'Name is not valid',
+    //     'string.regex': 'Project manager name is not valid'
+    //   })
+    //   .required(),
     team: Joi.array(),
     tasks: Joi.array()
   });
@@ -222,7 +222,7 @@ const CreateProject = (props) => {
         {errors.endDate?.type ? <p className={styles.error}>{errors.endDate.message}</p> : null}
       </div>
 
-      <label htmlFor="projectManager">Project Manager</label>
+      {/* <label htmlFor="projectManager">Project Manager</label>
       <input
         {...register('projectManager')}
         name="projectManager"
@@ -234,7 +234,7 @@ const CreateProject = (props) => {
         {errors.projectManager?.type ? (
           <p className={styles.error}>{errors.projectManager.message}</p>
         ) : null}
-      </div>
+      </div> */}
 
       <label htmlFor="team">Team</label>
       <input

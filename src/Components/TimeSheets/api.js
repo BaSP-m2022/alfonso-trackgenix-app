@@ -11,7 +11,7 @@ export const getTimesheetApi = async () => {
 export const deleteTimesheetApi = async (id) => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/time-sheets/${id}`, {
-      method: 'DELETE'
+      method: 'PATCH'
     });
     const data = await response.json();
     if (!data.error) {
@@ -55,6 +55,16 @@ export const editTimesheetApi = async (newBody, id) => {
     return data;
   } catch (err) {
     alert('There has been an error updating time-sheet');
+    return err;
+  }
+};
+
+export const getEmployeeTimesheetApi = async (id) => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/time-sheets/employee?id=${id}`);
+    const data = await response.json();
+    return data;
+  } catch (err) {
     return err;
   }
 };
