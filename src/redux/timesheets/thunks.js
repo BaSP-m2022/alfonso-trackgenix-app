@@ -2,8 +2,10 @@ import {
   getTimesheetApi,
   deleteTimesheetApi,
   addTimesheetApi,
-  editTimesheetApi
-} from '../../Components/TimeSheets/api';
+  editTimesheetApi,
+  getEmployeeTimesheetApi,
+  getTimesheetFromProjectApi
+} from 'Components/TimeSheets/api';
 import * as actions from './actions';
 
 export const getTimesheets = () => {
@@ -60,6 +62,32 @@ export const editTimesheet = (newBody, id) => {
       })
       .catch((error) => {
         dispatch(actions.updateTimeSheetFailed(error));
+      });
+  };
+};
+
+export const getEmployeeTimesheets = (id) => {
+  return (dispatch) => {
+    dispatch(actions.getEmployeTimesheetPending());
+    getEmployeeTimesheetApi(id)
+      .then((response) => {
+        dispatch(actions.getEmployeeTimesheetFulfilled(response.data));
+      })
+      .catch((error) => {
+        dispatch(actions.getEmployeTimesheetFailed(error));
+      });
+  };
+};
+
+export const getTimesheetsFromProject = (id) => {
+  return (dispatch) => {
+    dispatch(actions.getTimesheetsFromProjectPending());
+    getTimesheetFromProjectApi(id)
+      .then((response) => {
+        dispatch(actions.getTimesheetsFromProjectFulfilled(response.data));
+      })
+      .catch((error) => {
+        dispatch(actions.getTimesheetsFromProjectFailed(error));
       });
   };
 };

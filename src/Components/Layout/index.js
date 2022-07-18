@@ -17,6 +17,7 @@ import Header from '../Header/index';
 import Home from '../Home/index';
 import Loader from 'Components/Shared/Loader';
 import styles from './layout.module.css';
+import ProjectReport from 'Components/GenerateReport/ProjectReport';
 
 function Layout() {
   return (
@@ -25,6 +26,7 @@ function Layout() {
         <Header />
         <Suspense fallback={<Loader />}>
           <Switch>
+            <Route exact path="/" component={ProjectReport} /> {/*DELETE THIS PLS*/}
             <Route exact path="/" component={Home} />
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/login" component={Login} />
